@@ -7,6 +7,7 @@ import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -401,28 +402,49 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
     //--------------------------------下拉刷新部分--------------------------------//
     private BaseRefreshHeader refreshHeader;
     private float startY = -1;
+    private boolean isTouch = false;//防止惯性滑动触发刷新用
+    private boolean isDispatch = false;//是否处理掉触摸事件
 
     public interface OnRefreshListener {
         void onRefresh();
     }
 
-    void onTouchEvent(MotionEvent e) {
+    boolean dispatchTouchEvent(MotionEvent e, AutoLoadRecyclerView recyclerView) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                startY = e.getY();
-                break;
+//                Log.i("testMsg", "dispatchTouchEvent: ACTION_DOWN");
+                startY = e.getRawY();
+                isTouch = true;
+                isDispatch = false;
+                return false;
             case MotionEvent.ACTION_MOVE:
-                float deltaY = (e.getY() - startY)/2.5F;//为了防止滑动幅度过大，将实际手指滑动的距离除以2.5
-                //防止异常回弹(需要根据屏幕密度判断)
+//                Log.i("testMsg", "dispatchTouchEvent: ACTION_MOVE");
+                float deltaY = (e.getRawY() - startY) / 2.5F;//为了防止滑动幅度过大，将实际手指滑动的距离除以2.5
+                startY = e.getRawY();
+//                Log.i("testMsg", "dispatchTouchEvent: isTouch:" + isTouch + " checkOnTop:" + recyclerView.checkOnTop() + " deltaY:" + deltaY);
+                //分别判断是否是触摸拖动、是否越界拖动、是否处于拖动头部的状态
+                if (isTouch && ((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > RefreshHeader.MIN_HEIGHT)) {
+                    //防止异常回弹(需要根据屏幕密度判断)
 //                if(Math.abs(deltaY)<100){
                     refreshHeader.onMove(deltaY);
 //                }
-                startY = e.getY();
-                break;
+                    isDispatch = true;
+                }
+                return isDispatch;
             case MotionEvent.ACTION_UP:
+//                Log.i("testMsg", "dispatchTouchEvent: ACTION_UP");
                 refreshHeader.onRelease();
-                break;
+                isTouch = false;
+                startY = -1;
+                //如果有下拉刷新触摸的话，不分发触摸事件
+                if (isDispatch) {
+                    isDispatch = false;
+                    return true;
+                } else {
+                    return false;
+                }
         }
+        return false;
     }
 
     public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
@@ -435,7 +457,7 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
         }
     }
 
-    public void finishRefresh(){
+    public void finishRefresh() {
         refreshHeader.onRefreshFinish();
     }
 

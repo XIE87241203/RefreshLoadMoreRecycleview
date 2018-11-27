@@ -43,7 +43,7 @@ public class RefreshHeader extends BaseRefreshHeader {
     }
 
     @Override
-    public void setRefreshNormal() {
+    protected void setRefreshNormal() {
         super.setRefreshNormal();
         textView.setText("继续下拉刷新");
     }

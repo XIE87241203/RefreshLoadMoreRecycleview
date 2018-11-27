@@ -20,7 +20,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     public final static int STATE_REFRESHING = 2;//正在刷新的状态
     public final static int STATE_REFRESH_FINISH = 3;//刷新完成
 
-    private final static int MIN_HEIGHT = 1;
+    public final static int MIN_HEIGHT = 1;
 
     //下拉高度超过90%就判定为需要刷新
     private final static double REFRESH_HEIGHT_FACTOR = 0.9;
@@ -59,12 +59,16 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     /**
      * 设置Header的显示高度
      */
-    void setVisibleHeight(int height) {
+    void setVisibleHeight(double height) {
         if (height < MIN_HEIGHT) height = MIN_HEIGHT;
         ViewGroup.LayoutParams lp = contentView.getLayoutParams();
-        lp.height = height;
+        lp.height = (int) height;
         contentView.setLayoutParams(lp);
         allOffset = height;
+    }
+
+    double getVisibleHeight(){
+        return allOffset;
     }
 
     /**
@@ -80,7 +84,6 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
             minHeight = getContentHeight();
         }
         if (releaseAnimator != null) releaseAnimator.cancel();
-        Log.i("testMsg", "Animator: height:" + height + " minHeight" + minHeight);
         //不刷新，隐藏
         releaseAnimator = ValueAnimator.ofFloat(height, minHeight);
         releaseAnimator.setDuration(200);
@@ -100,7 +103,6 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                Log.i("testMsg", "onAnimationEnd: ");
                 if (!isAnimatorCancel) {
                     switch (state) {
                         case STATE_PREPARE_REFRESH:
@@ -135,26 +137,26 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
      * @param offSet 单次移动的位移
      */
     public void onMove(double offSet) {
-        Log.i("testMsg", "state: " + state);
         if (state == STATE_REFRESHING || state == STATE_REFRESH_FINISH) return;
         if (releaseAnimator != null && releaseAnimator.isStarted()) releaseAnimator.cancel();
-        int height = (int) (offSet + allOffset);
+        double height = offSet + allOffset;
         if (getMaxHeight() != -1 && height > getMaxHeight()) height = getMaxHeight();
         setVisibleHeight(height);
         if (allOffset >= getContentHeight() * REFRESH_HEIGHT_FACTOR) {
+//            Log.i("testMsg", "onMove1: state:" + state +" allOffset:"+ allOffset);
             if (state != STATE_PREPARE_REFRESH) {
                 onPrepare();
             }
         } else {
+//            Log.i("testMsg", "onMove2: state:" + state +" allOffset:"+ allOffset);
             if (state != STATE_REFRESH_NORMAL) {
                 setRefreshNormal();
             }
         }
     }
 
-    public void setRefreshNormal() {
+    protected void setRefreshNormal() {
         state = STATE_REFRESH_NORMAL;
-        onRelease();
     }
 
     /**

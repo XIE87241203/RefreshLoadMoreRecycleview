@@ -1,6 +1,5 @@
 package com.xie.rlrecycleview.view;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,10 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-
-import com.xie.rlrecycleview.RefreshHeader;
 
 /**
  * Created by iSmartGo-XIE on 2017/7/5.
@@ -74,7 +70,7 @@ public class AutoLoadRecyclerView extends RecyclerView {
         });
     }
 
-    private boolean checkOnTop() {
+    boolean checkOnTop() {
         int index = -1;
         if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
             index = ((StaggeredGridLayoutManager) getLayoutManager()).findFirstVisibleItemPositions(null)[0];
@@ -84,13 +80,13 @@ public class AutoLoadRecyclerView extends RecyclerView {
         return index == 0 || !canScrollVertically(-1);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        if (autoLoadRecyclerAdapter != null && autoLoadRecyclerAdapter.isPullToRefresh() && checkOnTop()) {
-            autoLoadRecyclerAdapter.onTouchEvent(e);
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        boolean isDispatch = false;
+        if (autoLoadRecyclerAdapter != null && autoLoadRecyclerAdapter.isPullToRefresh()) {
+            isDispatch = autoLoadRecyclerAdapter.dispatchTouchEvent(ev, this);
         }
-        return super.onTouchEvent(e);
+        return isDispatch || super.dispatchTouchEvent(ev);
     }
 
     /**
