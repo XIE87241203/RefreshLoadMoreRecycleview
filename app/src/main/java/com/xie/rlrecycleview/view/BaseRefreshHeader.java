@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -51,7 +50,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     /**
      * 正在刷新
      */
-    public void startRefreshing() {
+    protected void onRefreshing() {
         state = STATE_REFRESHING;
         if (onRefreshListener != null) onRefreshListener.onRefresh();
     }
@@ -67,7 +66,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
         allOffset = height;
     }
 
-    double getVisibleHeight(){
+    double getVisibleHeight() {
         return allOffset;
     }
 
@@ -76,16 +75,33 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
      */
     public void onRelease() {
         if (state == STATE_REFRESHING) return;
-        int height = contentView.getLayoutParams().height;
-        if (height == MIN_HEIGHT) return;
-        int minHeight = MIN_HEIGHT;
         //判断是否可以开始刷新
         if (state == STATE_PREPARE_REFRESH) {
-            minHeight = getContentHeight();
+            startRefresh();
+        } else {
+            int height = contentView.getLayoutParams().height;
+            if (height == MIN_HEIGHT) return;
+            showHeightAnimator(height, MIN_HEIGHT);
         }
+    }
+
+    public void startRefresh() {
+        int startHeight = contentView.getLayoutParams().height;
+        if (startHeight == MIN_HEIGHT) return;
+        int endHeight = getContentHeight();
+        showHeightAnimator(startHeight, endHeight);
+    }
+
+    /**
+     * 播放改变高度的动画
+     *
+     * @param startHeight startHeight
+     * @param endHeight   endHeight
+     */
+    private void showHeightAnimator(float startHeight, float endHeight) {
         if (releaseAnimator != null) releaseAnimator.cancel();
         //不刷新，隐藏
-        releaseAnimator = ValueAnimator.ofFloat(height, minHeight);
+        releaseAnimator = ValueAnimator.ofFloat(startHeight, endHeight);
         releaseAnimator.setDuration(200);
         releaseAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -106,7 +122,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
                 if (!isAnimatorCancel) {
                     switch (state) {
                         case STATE_PREPARE_REFRESH:
-                            startRefreshing();
+                            onRefreshing();
                             break;
                         case STATE_REFRESH_FINISH:
                             setRefreshNormal();
