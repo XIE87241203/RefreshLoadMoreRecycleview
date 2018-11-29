@@ -7,20 +7,15 @@ import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.xie.rlrecycleview.LoadMoreFooter;
-import com.xie.rlrecycleview.RefreshHeader;
-
-import java.util.Objects;
 
 /**
- * Created by iSmartGo-XIE on 2017/7/6.
+ * Created by Anthony-XIE on 2017/7/6.
  * 支持自动加载更多功能
  * 支持添加头部和尾部
  * 配合AutoLoadRecyclerView使用
@@ -28,7 +23,7 @@ import java.util.Objects;
  * 设置自动加载需要设置isAutoLoadMore为true
  */
 
-public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
+public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
 
     private static final int BASE_ITEM_TYPE_HEADER = 100001;
     private static final int SPECIAL_ITEM_TYPE_REFRESH_HEADER = 100000;
@@ -67,7 +62,7 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
     //获取内容Item数量
     protected abstract int getRealItemCount();
 
-    public AutoLoadRecyclerAdapter(Context context) {
+    public RefreshLoadRecyclerAdapter(Context context) {
         this.context = context;
     }
 
@@ -216,11 +211,11 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
      * @param isVisible isVisible
      */
     public void setNullDataUIHeaderVisibility(boolean isVisible) {
-        if (mHeaderViews.containsKey(BASE_ITEM_TYPE_NULL_DATA_HEADER)) {
+        if (mHeaderViews.indexOfKey(BASE_ITEM_TYPE_NULL_DATA_HEADER) >= 0) {
             if (isVisible) {
-                Objects.requireNonNull(mHeaderViews.get(BASE_ITEM_TYPE_NULL_DATA_HEADER)).setVisibility(View.VISIBLE);
+                mHeaderViews.get(BASE_ITEM_TYPE_NULL_DATA_HEADER).setVisibility(View.VISIBLE);
             } else {
-                Objects.requireNonNull(mHeaderViews.get(BASE_ITEM_TYPE_NULL_DATA_HEADER)).setVisibility(View.GONE);
+                mHeaderViews.get(BASE_ITEM_TYPE_NULL_DATA_HEADER).setVisibility(View.GONE);
             }
         }
     }
@@ -402,6 +397,8 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
     //--------------------------------下拉刷新部分--------------------------------//
     private BaseRefreshHeader refreshHeader;
     private float startY = -1;
+    private float allStartY = -1;
+    private float allStartX = -1;
     private boolean isTouch = false;//防止惯性滑动触发刷新用
     private boolean isDispatch = false;//是否处理掉触摸事件
 
@@ -409,24 +406,32 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
         void onRefresh();
     }
 
-    boolean dispatchTouchEvent(MotionEvent e, AutoLoadRecyclerView recyclerView) {
+    boolean dispatchTouchEvent(MotionEvent e, RefreshLoadRecyclerView recyclerView) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
 //                Log.i("testMsg", "dispatchTouchEvent: ACTION_DOWN");
+                //记录与上一次移动的位移
                 startY = e.getRawY();
+                //记录开始点的位移
+                allStartX = e.getRawX();
+                allStartY = e.getRawY();
                 isTouch = true;
                 isDispatch = false;
                 return false;
             case MotionEvent.ACTION_MOVE:
 //                Log.i("testMsg", "dispatchTouchEvent: ACTION_MOVE");
-                float deltaY = (e.getRawY() - startY) / 2.5F;//为了防止滑动幅度过大，将实际手指滑动的距离除以2.5
+                float deltaY = (e.getRawY() - startY);
+                //距离开始点的位移
+                float offsetX = (e.getRawX() - allStartX);
+                float offsetY = (e.getRawY() - allStartY);
                 startY = e.getRawY();
 //                Log.i("testMsg", "dispatchTouchEvent: isTouch:" + isTouch + " checkOnTop:" + recyclerView.checkOnTop() + " deltaY:" + deltaY);
-                //分别判断是否是触摸拖动、是否越界拖动、是否处于拖动头部的状态
-                if (isTouch && ((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > RefreshHeader.MIN_HEIGHT)) {
+                //分别判断是否是触摸拖动、是否垂直触摸、是否越界拖动、是否处于拖动头部的状态
+                if (isTouch && Math.abs(offsetY) > Math.abs(offsetX) && ((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > RefreshHeader.MIN_HEIGHT)) {
                     //防止异常回弹(需要根据屏幕密度判断)
 //                if(Math.abs(deltaY)<100){
-                    refreshHeader.onMove(deltaY);
+                    //为了防止滑动幅度过大，将实际手指滑动的距离除以2.5
+                    refreshHeader.onMove(deltaY / 2.5F);
 //                }
                     isDispatch = true;
                 }
@@ -436,6 +441,8 @@ public abstract class AutoLoadRecyclerAdapter extends RecyclerView.Adapter<BaseR
                 refreshHeader.onRelease();
                 isTouch = false;
                 startY = -1;
+                allStartX = -1;
+                allStartY = -1;
                 //如果有下拉刷新触摸的话，不分发触摸事件
                 if (isDispatch) {
                     isDispatch = false;

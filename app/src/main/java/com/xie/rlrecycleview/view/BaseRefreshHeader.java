@@ -30,7 +30,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     private View contentView;
     private boolean isAnimatorCancel = false;
     //下拉刷新监听
-    private AutoLoadRecyclerAdapter.OnRefreshListener onRefreshListener;
+    private RefreshLoadRecyclerAdapter.OnRefreshListener onRefreshListener;
 
     public BaseRefreshHeader(Context context) {
         super(context);
@@ -186,7 +186,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
         return state;
     }
 
-    public void setOnRefreshListener(AutoLoadRecyclerAdapter.OnRefreshListener onRefreshListener) {
+    public void setOnRefreshListener(RefreshLoadRecyclerAdapter.OnRefreshListener onRefreshListener) {
         this.onRefreshListener = onRefreshListener;
     }
 

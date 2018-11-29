@@ -16,25 +16,25 @@ import android.view.MotionEvent;
  * 滚动监听需要使用setWaterfallOnScrollListener监听
  */
 
-public class AutoLoadRecyclerView extends RecyclerView {
+public class RefreshLoadRecyclerView extends RecyclerView {
     private static final String TAG = "testMsg";
 
-    private AutoLoadRecyclerAdapter autoLoadRecyclerAdapter;
+    private RefreshLoadRecyclerAdapter refreshLoadRecyclerAdapter;
 
     /**
      * @param context context
      */
-    public AutoLoadRecyclerView(Context context) {
+    public RefreshLoadRecyclerView(Context context) {
         super(context);
         initView(context);
     }
 
-    public AutoLoadRecyclerView(Context context, @Nullable AttributeSet attrs) {
+    public RefreshLoadRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initView(context);
     }
 
-    public AutoLoadRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public RefreshLoadRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView(context);
     }
@@ -42,8 +42,8 @@ public class AutoLoadRecyclerView extends RecyclerView {
     @Override
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
-        if (adapter instanceof AutoLoadRecyclerAdapter) {
-            autoLoadRecyclerAdapter = (AutoLoadRecyclerAdapter) adapter;
+        if (adapter instanceof RefreshLoadRecyclerAdapter) {
+            refreshLoadRecyclerAdapter = (RefreshLoadRecyclerAdapter) adapter;
         }
     }
 
@@ -62,9 +62,9 @@ public class AutoLoadRecyclerView extends RecyclerView {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (autoLoadRecyclerAdapter != null && autoLoadRecyclerAdapter.isAutoLoadMore() && dy > 0) {
+                if (refreshLoadRecyclerAdapter != null && refreshLoadRecyclerAdapter.isAutoLoadMore() && dy > 0) {
                     //上滑操作
-                    checkTheBottomLoadMore(autoLoadRecyclerAdapter);
+                    checkTheBottomLoadMore(refreshLoadRecyclerAdapter);
                 }
             }
         });
@@ -83,8 +83,8 @@ public class AutoLoadRecyclerView extends RecyclerView {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         boolean isDispatch = false;
-        if (autoLoadRecyclerAdapter != null && autoLoadRecyclerAdapter.isPullToRefresh()) {
-            isDispatch = autoLoadRecyclerAdapter.dispatchTouchEvent(ev, this);
+        if (refreshLoadRecyclerAdapter != null && refreshLoadRecyclerAdapter.isPullToRefresh()) {
+            isDispatch = refreshLoadRecyclerAdapter.dispatchTouchEvent(ev, this);
         }
         return isDispatch || super.dispatchTouchEvent(ev);
     }
@@ -93,20 +93,20 @@ public class AutoLoadRecyclerView extends RecyclerView {
      * 检测是否需要自动加载
      * 当滑动到底部的时候开始自动加载更多
      */
-    private void checkTheBottomLoadMore(@NonNull AutoLoadRecyclerAdapter autoLoadRecyclerAdapter) {
+    private void checkTheBottomLoadMore(@NonNull RefreshLoadRecyclerAdapter refreshLoadRecyclerAdapter) {
         if (getLayoutManager() == null) return;
-        int startLoadIndex = autoLoadRecyclerAdapter.getRealItemCount() - autoLoadRecyclerAdapter.getLoadMoreKey();
+        int startLoadIndex = refreshLoadRecyclerAdapter.getRealItemCount() - refreshLoadRecyclerAdapter.getLoadMoreKey();
         //判断是否滚动到底部
-        if (!autoLoadRecyclerAdapter.isPullLoading() && autoLoadRecyclerAdapter.getRealItemCount() > 0) {
+        if (!refreshLoadRecyclerAdapter.isPullLoading() && refreshLoadRecyclerAdapter.getRealItemCount() > 0) {
             int visibleIndex = 0;
             if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
-                visibleIndex = ((StaggeredGridLayoutManager) getLayoutManager()).findLastVisibleItemPositions(null)[0] - autoLoadRecyclerAdapter.getHeadersCount();
+                visibleIndex = ((StaggeredGridLayoutManager) getLayoutManager()).findLastVisibleItemPositions(null)[0] - refreshLoadRecyclerAdapter.getHeadersCount();
             } else if (getLayoutManager() instanceof LinearLayoutManager) {
-                visibleIndex = ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition() - autoLoadRecyclerAdapter.getHeadersCount();
+                visibleIndex = ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition() - refreshLoadRecyclerAdapter.getHeadersCount();
             }
             //自动加载
             if (visibleIndex >= startLoadIndex)
-                autoLoadRecyclerAdapter.startLoadMore();
+                refreshLoadRecyclerAdapter.startLoadMore();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview;
+package com.xie.rlrecycleview.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.xie.rlrecycleview.view.BaseRefreshHeader;
 
 /**
  * Created by Anthony on 2018/11/23.

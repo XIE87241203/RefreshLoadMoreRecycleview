@@ -4,11 +4,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.xie.rlrecycleview.view.AutoLoadRecyclerAdapter;
-import com.xie.rlrecycleview.view.AutoLoadRecyclerView;
+import com.xie.rlrecycleview.view.RefreshLoadRecyclerAdapter;
+import com.xie.rlrecycleview.view.RefreshLoadRecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,12 +22,12 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 20; i++) {
             datas.add(i);
         }
-        AutoLoadRecyclerView recyclerView = findViewById(R.id.recyclerView);
+        RefreshLoadRecyclerView recyclerView = findViewById(R.id.recyclerView);
         adapter = new MyAdapter(this);
         recyclerView.setAdapter(adapter);
         adapter.setDatas(datas);
         adapter.setAutoLoadEnable(true, 3);
-        adapter.setOnLoadMoreListener(new AutoLoadRecyclerAdapter.OnLoadMoreListener() {
+        adapter.setOnLoadMoreListener(new RefreshLoadRecyclerAdapter.OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 Thread thread = new Thread(new Runnable() {
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         adapter.setPullToRefresh(true);
-        adapter.setOnRefreshListener(new AutoLoadRecyclerAdapter.OnRefreshListener() {
+        adapter.setOnRefreshListener(new RefreshLoadRecyclerAdapter.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Log.i("testMsg", "onRefresh: ");

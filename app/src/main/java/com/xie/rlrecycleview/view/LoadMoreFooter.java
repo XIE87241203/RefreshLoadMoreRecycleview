@@ -1,11 +1,9 @@
-package com.xie.rlrecycleview;
+package com.xie.rlrecycleview.view;
 
 import android.content.Context;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.xie.rlrecycleview.view.BaseLoadMoreFooter;
 
 /**
  * Created by Anthony on 2018/11/22.

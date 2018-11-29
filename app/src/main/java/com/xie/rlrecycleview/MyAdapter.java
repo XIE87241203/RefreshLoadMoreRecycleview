@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xie.rlrecycleview.view.AutoLoadRecyclerAdapter;
+import com.xie.rlrecycleview.view.RefreshLoadRecyclerAdapter;
 import com.xie.rlrecycleview.view.BaseRecyclerViewHolder;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Anthony on 2018/11/23.
  * Describe:
  */
-public class MyAdapter extends AutoLoadRecyclerAdapter {
+public class MyAdapter extends RefreshLoadRecyclerAdapter {
     private List<Integer> datas;
 
     public MyAdapter(Context context) {
