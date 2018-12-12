@@ -80,7 +80,10 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
             startRefresh();
         } else {
             int height = contentView.getLayoutParams().height;
-            if (height == MIN_HEIGHT) return;
+            if (height == MIN_HEIGHT){
+                onRefreshNormal();
+                return;
+            }
             showHeightAnimator(height, MIN_HEIGHT);
         }
     }
@@ -125,7 +128,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
                             onRefreshing();
                             break;
                         case STATE_REFRESH_FINISH:
-                            setRefreshNormal();
+                            onRefreshNormal();
                             break;
                     }
                 } else {
@@ -166,12 +169,12 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
         } else {
 //            Log.i("testMsg", "onMove2: state:" + state +" allOffset:"+ allOffset);
             if (state != STATE_REFRESH_NORMAL) {
-                setRefreshNormal();
+                onRefreshNormal();
             }
         }
     }
 
-    protected void setRefreshNormal() {
+    protected void onRefreshNormal() {
         state = STATE_REFRESH_NORMAL;
     }
 
@@ -196,7 +199,10 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
         setVisibleHeight(MIN_HEIGHT);
     }
 
-    public void onRefreshFinish() {
+    protected void onRefreshFinish() {
+    }
+
+    public void finishRefresh(){
         state = STATE_REFRESH_FINISH;
         onRelease();
     }

@@ -17,7 +17,6 @@ import android.view.MotionEvent;
  */
 
 public class RefreshLoadRecyclerView extends RecyclerView {
-    private static final String TAG = "testMsg";
 
     private RefreshLoadRecyclerAdapter refreshLoadRecyclerAdapter;
 

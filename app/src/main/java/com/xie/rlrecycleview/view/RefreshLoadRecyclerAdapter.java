@@ -465,7 +465,7 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
     }
 
     public void finishRefresh() {
-        refreshHeader.onRefreshFinish();
+        refreshHeader.finishRefresh();
     }
 
     /**
