@@ -19,8 +19,12 @@ public class RefreshLoadRecyclerItemDecoration extends RecyclerView.ItemDecorati
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        if (refreshLoadRecyclerAdapter != null && parent.getChildAdapterPosition(view) > refreshLoadRecyclerAdapter.getHeadersCount())
-            outRect.top = space;
+    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        if (refreshLoadRecyclerAdapter != null) {
+            int position = parent.getChildAdapterPosition(view);
+            if (position > refreshLoadRecyclerAdapter.getHeadersCount() && position < (refreshLoadRecyclerAdapter.getItemCount() - refreshLoadRecyclerAdapter.getFootersCount()))
+                outRect.top = space;
+        }
+
     }
 }

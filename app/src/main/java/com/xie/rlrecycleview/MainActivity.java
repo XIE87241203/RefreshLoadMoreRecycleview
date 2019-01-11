@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 thread.start();
             }
         });
-        adapter.setPullToRefresh(true);
+        adapter.setPullToRefreshEnable(true);
         adapter.setOnRefreshListener(new RefreshLoadRecyclerAdapter.OnRefreshListener() {
             @Override
             public void onRefresh() {

@@ -181,7 +181,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     /**
      * 处于可以刷新的状态，已经过了指定距离
      */
-    public void onPrepare() {
+    protected void onPrepare() {
         state = STATE_PREPARE_REFRESH;
     }
 

@@ -29,7 +29,7 @@ public class RefreshHeader extends BaseRefreshHeader {
     }
 
     @Override
-    public void onPrepare() {
+    protected void onPrepare() {
         super.onPrepare();
         textView.setText("松开刷新");
     }

@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
  */
 
 public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
-
     private static final int BASE_ITEM_TYPE_HEADER = 100001;
     private static final int SPECIAL_ITEM_TYPE_REFRESH_HEADER = 100000;
     private static final int BASE_ITEM_TYPE_NULL_DATA_HEADER = 200000;//空布局头部
@@ -32,9 +31,6 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
     private static final int SPECIAL_ITEM_TYPE_LOAD_FOOTER = 1000000;
 
     protected Context context;
-
-    //加载更多监听
-    private OnLoadMoreListener onLoadMoreListener;
 
     //加载更多布局
     private BaseLoadMoreFooter loadMoreFooterView;
@@ -49,6 +45,8 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
     //容器
     private SparseArrayCompat<View> mHeaderViews = new SparseArrayCompat<>();
     private SparseArrayCompat<View> mFootViews = new SparseArrayCompat<>();
+    private OnRefreshListener onRefreshListener;
+    private OnLoadMoreListener onLoadMoreListener;
 
     //代替onCreateViewHolder
     protected abstract BaseRecyclerViewHolder onCreateViewHolderNew(ViewGroup parent, int viewType);
@@ -64,6 +62,10 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
 
     public RefreshLoadRecyclerAdapter(Context context) {
         this.context = context;
+        refreshHeader = new RefreshHeader(context);
+        setRefreshHeader(refreshHeader);
+        loadMoreFooterView = new LoadMoreFooter(context);
+        setLoadMoreFooter(loadMoreFooterView);
     }
 
     @NonNull
@@ -254,13 +256,21 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
         }
     }
 
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
     /**
      * 设置刷新footer
      *
-     * @param view view
+     * @param loadMoreFooter loadMoreFooter
      */
-    private void setLoadMoreFooter(View view) {
-        mFootViews.put(SPECIAL_ITEM_TYPE_LOAD_FOOTER + BASE_ITEM_TYPE_FOOTER, view);
+    public void setLoadMoreFooter(@NonNull BaseLoadMoreFooter loadMoreFooter) {
+        loadMoreFooterView = loadMoreFooter;
+        loadMoreFooterView.setOnLoadMoreListener(onLoadMoreListener);
+        loadMoreFooterView.setLoadMoreState(BaseLoadMoreFooter.STATE_LOAD_FINISH);
+        mFootViews.put(SPECIAL_ITEM_TYPE_LOAD_FOOTER + BASE_ITEM_TYPE_FOOTER, loadMoreFooterView);
+        notifyDataSetChanged();
     }
 
     /**
@@ -304,25 +314,13 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
      * 开始加载
      */
     public void startLoadMore() {
-        //过滤同一页面重复请求
-        if (onLoadMoreListener == null || loadMoreFooterView == null || loadMoreFooterView.getState() != BaseLoadMoreFooter.STATE_LOAD_FINISH)
-            return;
-        loadMoreFooterView.setLoadMoreState(BaseLoadMoreFooter.STATE_LOADING);
-        onLoadMoreListener.onLoadMore();
+        if (loadMoreFooterView == null) return;
+        loadMoreFooterView.startLoadMore();
     }
 
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
-        if (onLoadMoreListener != null) initLoadMoreView();
-
-    }
-
-    private void initLoadMoreView() {
-        if (loadMoreFooterView == null) {
-            loadMoreFooterView = new LoadMoreFooter(context);
-            loadMoreFooterView.setLoadMoreState(BaseLoadMoreFooter.STATE_LOAD_FINISH);
-            setLoadMoreFooter(loadMoreFooterView);
-        }
+        loadMoreFooterView.setOnLoadMoreListener(onLoadMoreListener);
     }
 
     /**
@@ -339,6 +337,14 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
     public void showNoMoreHint() {
         if (loadMoreFooterView == null) return;
         loadMoreFooterView.setLoadMoreState(BaseLoadMoreFooter.STATE_NO_MORE);
+    }
+
+    /**
+     * 显示加载错误
+     */
+    public void showLoadMoreError(){
+        if (loadMoreFooterView == null) return;
+        loadMoreFooterView.setLoadMoreState(BaseLoadMoreFooter.STATE_LOAD_ERROR);
     }
 
     /**
@@ -361,8 +367,8 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
         return loadMoreFooterView.getState() == BaseLoadMoreFooter.STATE_NO_MORE;
     }
 
-    public interface OnLoadMoreListener {
-        void onLoadMore();
+    public boolean isLoadMoreError(){
+        return loadMoreFooterView.getState() == BaseLoadMoreFooter.STATE_LOAD_ERROR;
     }
 
     /**
@@ -427,7 +433,7 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
                 startY = e.getRawY();
 //                Log.i("testMsg", "dispatchTouchEvent: isTouch:" + isTouch + " checkOnTop:" + recyclerView.checkOnTop() + " deltaY:" + deltaY);
                 //分别判断是否是触摸拖动、是否垂直触摸、是否越界拖动、是否处于拖动头部的状态
-                if (isTouch && Math.abs(offsetY) > Math.abs(offsetX) && ((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > RefreshHeader.MIN_HEIGHT)) {
+                if (isTouch && Math.abs(offsetY) > Math.abs(offsetX) && ((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > BaseRefreshHeader.MIN_HEIGHT)) {
                     //防止异常回弹(需要根据屏幕密度判断)
 //                if(Math.abs(deltaY)<100){
                     //为了防止滑动幅度过大，将实际手指滑动的距离除以2.5
@@ -456,16 +462,27 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
 
     public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
         //下拉刷新监听
-        if (onRefreshListener != null && refreshHeader == null) {
-            refreshHeader = new RefreshHeader(context);
-            setRefreshHeader(refreshHeader);
-            refreshHeader.setOnRefreshListener(onRefreshListener);
-            refreshHeader.setVisibleHeight(1);
-        }
+        this.onRefreshListener = onRefreshListener;
+        if (refreshHeader != null) refreshHeader.setOnRefreshListener(onRefreshListener);
+    }
+
+    /**
+     * 设置刷新头部
+     *
+     * @param refreshHeader refreshHeader
+     */
+    public void setRefreshHeader(@NonNull BaseRefreshHeader refreshHeader) {
+        this.refreshHeader = refreshHeader;
+        refreshHeader.setOnRefreshListener(onRefreshListener);
+        refreshHeader.setVisibleHeight(1);
+        mHeaderViews.put(SPECIAL_ITEM_TYPE_REFRESH_HEADER, refreshHeader);
+        notifyDataSetChanged();
     }
 
     public void finishRefresh() {
-        refreshHeader.finishRefresh();
+        if (refreshHeader != null)
+            refreshHeader.finishRefresh();
+        finishLoadMore();
     }
 
     /**
@@ -473,7 +490,7 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
      *
      * @param pullToRefresh 是否开启下拉刷新
      */
-    public void setPullToRefresh(boolean pullToRefresh) {
+    public void setPullToRefreshEnable(boolean pullToRefresh) {
         isPullToRefresh = pullToRefresh;
     }
 
@@ -486,12 +503,4 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
         return isPullToRefresh;
     }
 
-    /**
-     * 设置刷新头部
-     *
-     * @param refreshHeader refreshHeader
-     */
-    private void setRefreshHeader(BaseRefreshHeader refreshHeader) {
-        mHeaderViews.put(SPECIAL_ITEM_TYPE_REFRESH_HEADER, refreshHeader);
-    }
 }
