@@ -51,7 +51,7 @@ public class LoadMoreFooter extends BaseLoadMoreFooter {
     }
 
     @Override
-    protected void showLoadMoreView() {
+    protected void showNoMoreView() {
         textView.setVisibility(VISIBLE);
         textView.setText("没有更多了");
     }

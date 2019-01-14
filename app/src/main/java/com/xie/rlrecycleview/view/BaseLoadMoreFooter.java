@@ -61,7 +61,7 @@ public abstract class BaseLoadMoreFooter extends RelativeLayout {
                 Loading();
                 break;
             case STATE_NO_MORE:
-                showLoadMoreView();
+                showNoMoreView();
                 break;
             case STATE_LOAD_ERROR:
                 loadMoreError();
@@ -95,7 +95,7 @@ public abstract class BaseLoadMoreFooter extends RelativeLayout {
 
     protected abstract void loadMoreFinish();
 
-    protected abstract void showLoadMoreView();
+    protected abstract void showNoMoreView();
 
     protected abstract void loadMoreError();
 }
