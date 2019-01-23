@@ -1,33 +1,24 @@
 package com.xie.rlrecycleview.view;
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 
 /**
  * Created by Anthony-XIE on 2017/7/6.
- * 支持自动加载更多功能
- * 支持添加头部和尾部
- * 配合AutoLoadRecyclerView使用
- * 需要用到自动加载的话需要实现OnLoadMoreListener用于处理加载逻辑
- * 设置自动加载需要设置isAutoLoadMore为true
  */
 
 public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
     private static final int BASE_ITEM_TYPE_HEADER = 100001;
     private static final int SPECIAL_ITEM_TYPE_REFRESH_HEADER = 100000;
-    private static final int BASE_ITEM_TYPE_NULL_DATA_HEADER = 200000;//空布局头部
-    private static final int BASE_ITEM_TYPE_FOOTER = 200001;
+    private static final int BASE_ITEM_TYPE_FOOTER = 200000;
     private static final int SPECIAL_ITEM_TYPE_LOAD_FOOTER = 1000000;
 
     protected Context context;
@@ -179,47 +170,6 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
      */
     public void addHeaderView(View view) {
         mHeaderViews.put(mHeaderViews.size() + BASE_ITEM_TYPE_HEADER, view);
-    }
-
-    /**
-     * 添加并隐藏空布局
-     *
-     * @return 空布局View
-     */
-    public View addNullDataUIHeaderView(@LayoutRes int id) {
-        //在外面套布局，防止GONE时显示异常
-        LinearLayout linearLayout = new LinearLayout(context);
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        linearLayout.setLayoutParams(lp);
-        LayoutInflater.from(context).inflate(id, linearLayout);
-        mHeaderViews.put(BASE_ITEM_TYPE_NULL_DATA_HEADER, linearLayout);
-        setNullDataUIHeaderVisibility(false);
-        return linearLayout;
-    }
-
-    /**
-     * 移除空布局
-     */
-    public void removeNullDataUIHeaderView() {
-        int index = mHeaderViews.indexOfKey(BASE_ITEM_TYPE_NULL_DATA_HEADER);
-        if (index != -1) {
-            mHeaderViews.remove(BASE_ITEM_TYPE_NULL_DATA_HEADER);
-        }
-    }
-
-    /**
-     * 设置空布局隐藏或显示
-     *
-     * @param isVisible isVisible
-     */
-    public void setNullDataUIHeaderVisibility(boolean isVisible) {
-        if (mHeaderViews.indexOfKey(BASE_ITEM_TYPE_NULL_DATA_HEADER) >= 0) {
-            if (isVisible) {
-                mHeaderViews.get(BASE_ITEM_TYPE_NULL_DATA_HEADER).setVisibility(View.VISIBLE);
-            } else {
-                mHeaderViews.get(BASE_ITEM_TYPE_NULL_DATA_HEADER).setVisibility(View.GONE);
-            }
-        }
     }
 
     /**
