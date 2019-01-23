@@ -5,15 +5,16 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 /**
  * Created by Anthony on 2018/11/23.
  * Describe:
  */
-public abstract class BaseRefreshHeader extends RelativeLayout {
+public abstract class BaseRefreshHeader extends LinearLayout {
     public final static int STATE_REFRESH_NORMAL = 0;//正常状态
     public final static int STATE_PREPARE_REFRESH = 1;//准备刷新的状态
     public final static int STATE_REFRESHING = 2;//正在刷新的状态
@@ -50,7 +51,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     /**
      * 正在刷新
      */
-    protected void onRefreshing() {
+    protected void onRefreshStart() {
         state = STATE_REFRESHING;
         if (onRefreshListener != null) onRefreshListener.onRefresh();
     }
@@ -60,9 +61,9 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
      */
     void setVisibleHeight(double height) {
         if (height < MIN_HEIGHT) height = MIN_HEIGHT;
-        ViewGroup.LayoutParams lp = contentView.getLayoutParams();
+        ViewGroup.LayoutParams lp = getLayoutParams();
         lp.height = (int) height;
-        contentView.setLayoutParams(lp);
+        setLayoutParams(lp);
         allOffset = height;
     }
 
@@ -79,7 +80,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
         if (state == STATE_PREPARE_REFRESH) {
             startRefresh();
         } else {
-            int height = contentView.getLayoutParams().height;
+            int height = getLayoutParams().height;
             if (height == MIN_HEIGHT){
                 onRefreshNormal();
                 return;
@@ -89,7 +90,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     }
 
     public void startRefresh() {
-        int startHeight = contentView.getLayoutParams().height;
+        int startHeight = getLayoutParams().height;
         if (startHeight == MIN_HEIGHT) return;
         int endHeight = getContentHeight();
         showHeightAnimator(startHeight, endHeight);
@@ -125,7 +126,7 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
                 if (!isAnimatorCancel) {
                     switch (state) {
                         case STATE_PREPARE_REFRESH:
-                            onRefreshing();
+                            onRefreshStart();
                             break;
                         case STATE_REFRESH_FINISH:
                             onRefreshNormal();
@@ -194,8 +195,11 @@ public abstract class BaseRefreshHeader extends RelativeLayout {
     }
 
     private void initView(Context context) {
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         contentView = getContentView(context);
-        addView(contentView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getContentHeight());
+        lp.gravity = Gravity.BOTTOM;
+        addView(contentView,lp);
         setVisibleHeight(MIN_HEIGHT);
     }
 

@@ -35,8 +35,8 @@ public class RefreshHeader extends BaseRefreshHeader {
     }
 
     @Override
-    public void onRefreshing() {
-        super.onRefreshing();
+    public void onRefreshStart() {
+        super.onRefreshStart();
         textView.setText("刷新中...");
     }
 
