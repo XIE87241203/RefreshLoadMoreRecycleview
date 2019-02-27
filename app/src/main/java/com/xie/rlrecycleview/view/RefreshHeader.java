@@ -53,7 +53,7 @@ public class RefreshHeader extends BaseRefreshHeader {
     }
 
     @Override
-    public int getContentHeight() {
+    public int getRefreshingContentHeight() {
         return 200;
     }
 
@@ -68,7 +68,7 @@ public class RefreshHeader extends BaseRefreshHeader {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setGravity(Gravity.BOTTOM);
         textView = new TextView(context);
-        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getContentHeight());
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getRefreshingContentHeight());
         textView.setTextSize(20);
         textView.setGravity(Gravity.CENTER);
         textView.setText("继续下拉刷新");
