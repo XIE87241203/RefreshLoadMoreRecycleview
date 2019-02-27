@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
  */
 public abstract class BaseRefreshHeader extends LinearLayout {
     public final static int STATE_REFRESH_NORMAL = 0;//正常状态
-    public final static int STATE_PREPARE_REFRESH = 1;//准备刷新的状态
+    public final static int STATE_REFRESH_PREPARE = 1;//准备刷新的状态
     public final static int STATE_REFRESHING = 2;//正在刷新的状态
     public final static int STATE_REFRESH_FINISH = 3;//刷新完成
 
@@ -77,7 +77,7 @@ public abstract class BaseRefreshHeader extends LinearLayout {
     public void onRelease() {
         if (state == STATE_REFRESHING) return;
         //判断是否可以开始刷新
-        if (state == STATE_PREPARE_REFRESH) {
+        if (state == STATE_REFRESH_PREPARE) {
             startRefresh();
         } else {
             int height = getLayoutParams().height;
@@ -125,7 +125,7 @@ public abstract class BaseRefreshHeader extends LinearLayout {
             public void onAnimationEnd(Animator animation) {
                 if (!isAnimatorCancel) {
                     switch (state) {
-                        case STATE_PREPARE_REFRESH:
+                        case STATE_REFRESH_PREPARE:
                             onRefreshStart();
                             break;
                         case STATE_REFRESH_FINISH:
@@ -164,8 +164,8 @@ public abstract class BaseRefreshHeader extends LinearLayout {
         setVisibleHeight(height);
         if (allOffset >= getRefreshingContentHeight() * REFRESH_HEIGHT_FACTOR) {
 //            Log.i("testMsg", "onMove1: state:" + state +" allOffset:"+ allOffset);
-            if (state != STATE_PREPARE_REFRESH) {
-                onPrepare();
+            if (state != STATE_REFRESH_PREPARE) {
+                onRefreshPrepare();
             }
         } else {
 //            Log.i("testMsg", "onMove2: state:" + state +" allOffset:"+ allOffset);
@@ -182,8 +182,8 @@ public abstract class BaseRefreshHeader extends LinearLayout {
     /**
      * 处于可以刷新的状态，已经过了指定距离
      */
-    protected void onPrepare() {
-        state = STATE_PREPARE_REFRESH;
+    protected void onRefreshPrepare() {
+        state = STATE_REFRESH_PREPARE;
     }
 
     public int getState() {
