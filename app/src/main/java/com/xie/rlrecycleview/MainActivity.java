@@ -2,6 +2,7 @@ package com.xie.rlrecycleview;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 
 import com.xie.rlrecycleview.view.RefreshLoadRecyclerAdapter;
@@ -19,10 +20,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         datas = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 40; i++) {
             datas.add(i);
         }
         RefreshLoadRecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         adapter = new MyAdapter(this);
         recyclerView.setAdapter(adapter);
         adapter.setDatas(datas);

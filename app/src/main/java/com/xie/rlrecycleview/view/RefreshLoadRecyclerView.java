@@ -73,17 +73,22 @@ public class RefreshLoadRecyclerView extends RecyclerView {
     boolean checkOnTop() {
         int index = -1;
         boolean isFirstViewOnTop = false;
+        View topView = null;
         if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
-            index = ((StaggeredGridLayoutManager) getLayoutManager()).findFirstVisibleItemPositions(null)[0];
+            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) getLayoutManager();
+            index = staggeredGridLayoutManager.findFirstVisibleItemPositions(null)[0];
+            if (index == 1) {
+                topView = staggeredGridLayoutManager.findViewByPosition(1);
+            }
         } else if (getLayoutManager() instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) getLayoutManager();
             index = linearLayoutManager.findFirstVisibleItemPosition();
             if (index == 1) {
-                View topView = linearLayoutManager.findViewByPosition(1);
-                if (topView != null) {
-                    isFirstViewOnTop = getViewTopWithOutMarginPadding(topView);
-                }
+                topView = linearLayoutManager.findViewByPosition(1);
             }
+        }
+        if (topView != null) {
+            isFirstViewOnTop = getViewTopWithOutMarginPadding(topView);
         }
         //分别是第一个看到的item为0；是否能向下滑动（有view隐藏时有bug，比如刷新头部）；除刷新头部外第一个看到的view的top是否为0
         return index == 0 || !canScrollVertically(-1) || isFirstViewOnTop;

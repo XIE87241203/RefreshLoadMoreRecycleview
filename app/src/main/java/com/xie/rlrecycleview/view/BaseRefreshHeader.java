@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,7 @@ public abstract class BaseRefreshHeader extends LinearLayout {
      * 设置Header的显示高度
      */
     void setVisibleHeight(double height) {
+        Log.i("testMsg", "setVisibleHeight: " + height);
         if (height < MIN_HEIGHT) height = MIN_HEIGHT;
         ViewGroup.LayoutParams lp = getLayoutParams();
         lp.height = (int) height;

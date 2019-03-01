@@ -6,6 +6,7 @@ import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -396,7 +397,9 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
 //                      if(Math.abs(deltaY)<100){
                         refreshHeader.onMove(deltaY / MOVE_RESISTANCE_FACTOR);
 //                      }
-                        isDispatch = true;
+                        //recycleview不能滑动之后拦截滑动事件
+                        isDispatch = !recyclerView.canScrollVertically(-1);
+//                        Log.i("testMsg", "isDispatch: " + isDispatch);
                     } else {
                         isDispatch = false;
                     }
