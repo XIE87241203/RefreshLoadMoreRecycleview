@@ -20,7 +20,7 @@ public abstract class BaseRefreshHeader extends LinearLayout {
     public final static int STATE_REFRESHING = 2;//正在刷新的状态
     public final static int STATE_REFRESH_FINISH = 3;//刷新完成
 
-    public final static int MIN_HEIGHT = 1;
+    public final static int MIN_HEIGHT = 0;
 
     //下拉高度超过90%就判定为需要刷新
     private final static double REFRESH_HEIGHT_FACTOR = 0.9;

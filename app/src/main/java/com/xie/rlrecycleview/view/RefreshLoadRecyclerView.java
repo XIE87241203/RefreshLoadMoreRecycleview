@@ -8,7 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
 /**
  * Created by iSmartGo-XIE on 2017/7/5.
@@ -71,12 +73,22 @@ public class RefreshLoadRecyclerView extends RecyclerView {
 
     boolean checkOnTop() {
         int index = -1;
+        boolean isFirstViewOnTop = false;
         if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
             index = ((StaggeredGridLayoutManager) getLayoutManager()).findFirstVisibleItemPositions(null)[0];
         } else if (getLayoutManager() instanceof LinearLayoutManager) {
-            index = ((LinearLayoutManager) getLayoutManager()).findFirstVisibleItemPosition();
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) getLayoutManager();
+            index = linearLayoutManager.findFirstVisibleItemPosition();
+            Log.i("RefreshLoadRecyclerView", "index: " + index);
+            if (index == 1) {
+                View topView = linearLayoutManager.findViewByPosition(1);
+                if (topView != null) {
+                    isFirstViewOnTop = topView.getTop() == 0;
+                }
+
+            }
         }
-        return index == 0 || !canScrollVertically(-1);
+        return index == 0 || !canScrollVertically(-1) || isFirstViewOnTop;
     }
 
     @Override
