@@ -63,11 +63,11 @@ public abstract class BaseRefreshHeader extends LinearLayout {
         if (height < MIN_HEIGHT) height = MIN_HEIGHT;
         ViewGroup.LayoutParams lp = getLayoutParams();
         lp.height = (int) height;
-        setLayoutParams(lp);
+        requestLayout();
         allOffset = height;
     }
 
-    double getVisibleHeight() {
+    public double getVisibleHeight() {
         return allOffset;
     }
 
@@ -91,8 +91,8 @@ public abstract class BaseRefreshHeader extends LinearLayout {
 
     public void startRefresh() {
         int startHeight = getLayoutParams().height;
-        if (startHeight == MIN_HEIGHT) return;
         int endHeight = getRefreshingContentHeight();
+        onRefreshPrepare();
         showHeightAnimator(startHeight, endHeight);
     }
 
@@ -212,16 +212,16 @@ public abstract class BaseRefreshHeader extends LinearLayout {
     }
 
     /**
-     * 获取刷新时布局内容的高度
-     */
-    public abstract int getRefreshingContentHeight();
-
-    /**
      * 获取刷新布局最大下拉高度，-1为无限大
      *
      * @return 刷新布局最大下拉高度
      */
     public abstract int getMaxHeight();
+
+    /**
+     * 获取刷新时布局内容的高度
+     */
+    public abstract int getRefreshingContentHeight();
 
     @NonNull
     public abstract View getContentView(Context context);

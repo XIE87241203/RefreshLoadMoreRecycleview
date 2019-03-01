@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -79,16 +78,28 @@ public class RefreshLoadRecyclerView extends RecyclerView {
         } else if (getLayoutManager() instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) getLayoutManager();
             index = linearLayoutManager.findFirstVisibleItemPosition();
-            Log.i("RefreshLoadRecyclerView", "index: " + index);
             if (index == 1) {
                 View topView = linearLayoutManager.findViewByPosition(1);
                 if (topView != null) {
-                    isFirstViewOnTop = topView.getTop() == 0;
+                    isFirstViewOnTop = getViewTopWithOutMarginPadding(topView);
                 }
-
             }
         }
+        //分别是第一个看到的item为0；是否能向下滑动（有view隐藏时有bug，比如刷新头部）；除刷新头部外第一个看到的view的top是否为0
         return index == 0 || !canScrollVertically(-1) || isFirstViewOnTop;
+    }
+
+    /**
+     * 获取View的top减去边距是否为0
+     * @param view
+     * @return
+     */
+    private boolean getViewTopWithOutMarginPadding(@NonNull View view) {
+        int marginTop = 0;
+        if (view.getLayoutParams() != null) {
+            marginTop = ((LayoutParams) view.getLayoutParams()).topMargin;
+        }
+        return (view.getTop() - marginTop) == 0;
     }
 
     @Override

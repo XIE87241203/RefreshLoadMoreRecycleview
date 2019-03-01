@@ -353,10 +353,13 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
     //--------------------------------下拉刷新部分--------------------------------//
     private BaseRefreshHeader refreshHeader;
     private float startY = -1;
+    private float startX = -1;
     private float allStartY = -1;
     private float allStartX = -1;
     private boolean isTouch = false;//防止惯性滑动触发刷新用
     private boolean isDispatch = false;//是否处理掉触摸事件
+    //头部滑动的阻力系数
+    private float MOVE_RESISTANCE_FACTOR = 2.5F;
 
     public interface OnRefreshListener {
         void onRefresh();
@@ -368,6 +371,7 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
 //                Log.i("testMsg", "dispatchTouchEvent: ACTION_DOWN");
                 //记录与上一次移动的位移
                 startY = e.getRawY();
+                startX = e.getRawX();
                 //记录开始点的位移
                 allStartX = e.getRawX();
                 allStartY = e.getRawY();
@@ -377,19 +381,25 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
             case MotionEvent.ACTION_MOVE:
 //                Log.i("testMsg", "dispatchTouchEvent: ACTION_MOVE");
                 float deltaY = (e.getRawY() - startY);
+                float deltaX = (e.getRawX() - startX);
                 //距离开始点的位移
-                float offsetX = (e.getRawX() - allStartX);
+//                float offsetX = (e.getRawX() - allStartX);
                 float offsetY = (e.getRawY() - allStartY);
                 startY = e.getRawY();
-//                Log.i("testMsg", "dispatchTouchEvent: isTouch:" + isTouch + " checkOnTop:" + recyclerView.checkOnTop() + " deltaY:" + deltaY);
+                startX = e.getRawX();
+//                Log.i("testMsg", "dispatchTouchEvent: isTouch:" + isTouch + " checkOnTop:" + recyclerView.checkOnTop() + " deltaY:" + deltaY + "refreshHeader.getVisibleHeight()" + refreshHeader.getVisibleHeight());
                 //分别判断是否是触摸拖动、是否垂直触摸、是否越界拖动、是否处于拖动头部的状态
-                if (isTouch && Math.abs(offsetY) > Math.abs(offsetX) && ((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > BaseRefreshHeader.MIN_HEIGHT)) {
-                    //防止异常回弹(需要根据屏幕密度判断)
-//                if(Math.abs(deltaY)<100){
-                    //为了防止滑动幅度过大，将实际手指滑动的距离除以2.5
-                    refreshHeader.onMove(deltaY / 2.5F);
-//                }
-                    isDispatch = true;
+//                Log.i("testMsg", "isTouch: " + isTouch + " offsetY:" + offsetY + "offsetX:" + offsetX);
+                if (isTouch && Math.abs(deltaY) > Math.abs(deltaX)) {
+                    if (((deltaY > 0 && recyclerView.checkOnTop()) || refreshHeader.getVisibleHeight() > BaseRefreshHeader.MIN_HEIGHT)) {
+                        //防止异常回弹(需要根据屏幕密度判断)
+//                      if(Math.abs(deltaY)<100){
+                        refreshHeader.onMove(deltaY / MOVE_RESISTANCE_FACTOR);
+//                      }
+                        isDispatch = true;
+                    } else {
+                        isDispatch = false;
+                    }
                 }
                 return isDispatch;
             case MotionEvent.ACTION_UP:
@@ -427,6 +437,11 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
         refreshHeader.setVisibleHeight(1);
         mHeaderViews.put(SPECIAL_ITEM_TYPE_REFRESH_HEADER, refreshHeader);
         notifyDataSetChanged();
+    }
+
+    public void startRefresh(){
+        if (refreshHeader != null)
+            refreshHeader.startRefresh();
     }
 
     public void finishRefresh() {
