@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,11 +6,14 @@ import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xie.refreshloadrecyclerview.main.footer.BaseLoadMoreFooter;
+import com.xie.refreshloadrecyclerview.main.footer.DefaultLoadMoreFooter;
+import com.xie.refreshloadrecyclerview.main.header.BaseRefreshHeader;
+import com.xie.refreshloadrecyclerview.main.header.DefaultRefreshHeader;
 
 /**
  * Created by Anthony-XIE on 2017/7/6.
@@ -54,9 +57,9 @@ public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<Ba
 
     public RefreshLoadRecyclerAdapter(Context context) {
         this.context = context;
-        refreshHeader = new RefreshHeader(context);
+        refreshHeader = new DefaultRefreshHeader(context);
         setRefreshHeader(refreshHeader);
-        loadMoreFooterView = new LoadMoreFooter(context);
+        loadMoreFooterView = new DefaultLoadMoreFooter(context);
         setLoadMoreFooter(loadMoreFooterView);
     }
 

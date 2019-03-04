@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main.footer;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -6,16 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.xie.rlrecycleview.Tools;
+import com.xie.refreshloadrecyclerview.tools.Tools;
 
 /**
  * Created by Anthony on 2018/11/22.
  * Describe:
  */
-public class LoadMoreFooter extends BaseLoadMoreFooter {
+public class DefaultLoadMoreFooter extends BaseLoadMoreFooter {
     private TextView textView;
 
-    public LoadMoreFooter(Context context) {
+    public DefaultLoadMoreFooter(Context context) {
         super(context);
     }
 

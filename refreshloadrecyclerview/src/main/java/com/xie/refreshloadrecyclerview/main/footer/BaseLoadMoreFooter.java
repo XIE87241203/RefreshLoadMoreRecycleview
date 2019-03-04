@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main.footer;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
+
+import com.xie.refreshloadrecyclerview.main.RefreshLoadRecyclerAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

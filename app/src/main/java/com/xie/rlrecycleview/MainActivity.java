@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 
-import com.xie.rlrecycleview.view.RefreshLoadRecyclerAdapter;
-import com.xie.rlrecycleview.view.RefreshLoadRecyclerView;
+import com.xie.refreshloadrecyclerview.main.RefreshLoadRecyclerAdapter;
+import com.xie.refreshloadrecyclerview.main.RefreshLoadRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;

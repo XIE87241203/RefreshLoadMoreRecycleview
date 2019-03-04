@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main.header;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -10,6 +10,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import com.xie.refreshloadrecyclerview.main.RefreshLoadRecyclerAdapter;
 
 /**
  * Created by Anthony on 2018/11/23.
@@ -60,7 +62,7 @@ public abstract class BaseRefreshHeader extends LinearLayout {
     /**
      * 设置Header的显示高度
      */
-    void setVisibleHeight(double height) {
+    public void setVisibleHeight(double height) {
         Log.i("testMsg", "setVisibleHeight: " + height);
         if (height < MIN_HEIGHT) height = MIN_HEIGHT;
         ViewGroup.LayoutParams lp = getLayoutParams();

@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main;
 
 import android.graphics.Rect;
 import android.support.annotation.NonNull;

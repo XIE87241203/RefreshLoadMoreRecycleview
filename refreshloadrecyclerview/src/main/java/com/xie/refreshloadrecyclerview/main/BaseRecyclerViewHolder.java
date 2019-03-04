@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

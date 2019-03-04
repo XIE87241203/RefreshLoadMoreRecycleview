@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xie.rlrecycleview.view.RefreshLoadRecyclerAdapter;
-import com.xie.rlrecycleview.view.BaseRecyclerViewHolder;
+import com.xie.refreshloadrecyclerview.main.RefreshLoadRecyclerAdapter;
+import com.xie.refreshloadrecyclerview.main.BaseRecyclerViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.xie.rlrecycleview.view;
+package com.xie.refreshloadrecyclerview.main.header;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,18 +13,18 @@ import android.widget.TextView;
  * Created by Anthony on 2018/11/23.
  * Describe:
  */
-public class RefreshHeader extends BaseRefreshHeader {
+public class DefaultRefreshHeader extends BaseRefreshHeader {
     private TextView textView;
 
-    public RefreshHeader(Context context) {
+    public DefaultRefreshHeader(Context context) {
         super(context);
     }
 
-    public RefreshHeader(Context context, AttributeSet attrs) {
+    public DefaultRefreshHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public RefreshHeader(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DefaultRefreshHeader(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
