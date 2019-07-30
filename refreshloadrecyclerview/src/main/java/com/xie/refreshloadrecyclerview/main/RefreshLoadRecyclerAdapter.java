@@ -17,6 +17,14 @@ import com.xie.refreshloadrecyclerview.main.header.DefaultRefreshHeader;
 
 /**
  * Created by Anthony-XIE on 2017/7/6.
+ * 继承此adapter，配合{@link RefreshLoadRecyclerView}使用
+ * <br>其中
+ * <br>{@link #onBindViewHolderNew(BaseRecyclerViewHolder, int)}代替{@link #onBindViewHolder(BaseRecyclerViewHolder, int)}；
+ * <br>{@link #onCreateViewHolderNew(ViewGroup, int)}代替{@link #onCreateViewHolder(ViewGroup, int)}；
+ * <br>{@link #getItemViewTypeNew(int)}代替{@link #getItemViewType(int)}；
+ * <br>
+ * 若需要使用自定义加载尾部和刷新头部需继承{@link BaseLoadMoreFooter}和{@link BaseRefreshHeader}
+ * <br>并使用{@link #setLoadMoreFooter(BaseLoadMoreFooter)}和{@link #setRefreshHeader(BaseRefreshHeader)}设置对应的view
  */
 
 public abstract class RefreshLoadRecyclerAdapter extends RecyclerView.Adapter<BaseRecyclerViewHolder> {

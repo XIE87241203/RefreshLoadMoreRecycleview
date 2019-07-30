@@ -12,9 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /**
- * Created by iSmartGo-XIE on 2017/7/5.
- * 自动加载功能带有RecyclerView需要配合BaseWaterFallAdapter使用
- * 滚动监听需要使用setWaterfallOnScrollListener监听
+ * Created by XIE on 2017/7/5.
+ * 自动下拉刷新和自动加载功能的RecyclerView。需要配合{@link RefreshLoadRecyclerAdapter}使用
  */
 
 public class RefreshLoadRecyclerView extends RecyclerView {
